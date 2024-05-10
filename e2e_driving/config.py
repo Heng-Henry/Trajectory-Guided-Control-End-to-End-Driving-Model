@@ -7,7 +7,7 @@ class GlobalConfig:
 	pred_len = 4 # future waypoints predicted
 
 	# data root
-	root_dir_all = '/DATASET_PATH' # TODO: set data path
+	root_dir_all = '/DATASET_PATH' 
 
 	train_towns = ['town01', 'town03', 'town04', 'town06', ]
 	val_towns = ['town02', 'town05', 'town07', 'town10']
@@ -18,8 +18,8 @@ class GlobalConfig:
 	for town in val_towns:
 		val_data.append(os.path.join(root_dir_all, town+'_val'))
 
-	ignore_sides = True # don't consider side cameras
-	ignore_rear = True # don't consider rear cameras
+	ignore_sides = True 
+	ignore_rear = True 
 
 	input_resolution = 256
 
