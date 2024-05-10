@@ -127,7 +127,7 @@ class VAAgent(autonomous_agent.AutonomousAgent):
 		self.step += 1
 
 
-		# TODO 5
+		
 		"""
 		Tick data from CARLA
 		:rgb: input_data['rgb'][1][:, :, :3] (convert it into RGB format)
@@ -136,12 +136,12 @@ class VAAgent(autonomous_agent.AutonomousAgent):
 		:speed: input_data['speed'][1]['speed']
 		:compass: input_data['imu'][1][-1]
 		"""
-		rgb = None
-		bev = None
-		gps = None
-		speed = None
-		compass = None
-		# End TODO 5
+		rgb = cv2.cvtColor(input_data['rgb'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+		bev = cv2.cvtColor(input_data['bev'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+		gps = input_data['gps'][1][:2]
+		speed = input_data['speed'][1]['speed']
+		compass = input_data['imu'][1][-1]
+	
 		
 		if (math.isnan(compass) == True): #It can happen that the compass sends nan for a few frames
 			compass = 0.0
@@ -207,13 +207,13 @@ class VAAgent(autonomous_agent.AutonomousAgent):
 
 		pred = self.net(rgb, state, target_point)
 
-		# TODO 6
+		
 		"""
-		Predicts vehicle control with a PID controller. (Use control_pid in self.net)
+		Predicts vehicle control with a PID controller.
 		We strongly suggest that you study "control_pid".
 		"""
-		steer_traj, throttle_traj, brake_traj, metadata_traj = None
-		# End TODO 6
+		#steer_traj, throttle_traj, brake_traj, metadata_traj = self.net.control_pid(pred['pred_wp'],gt_velocity,
+		
 
 		if brake_traj < 0.05: brake_traj = 0.0
 		if throttle_traj > brake_traj: brake_traj = 0.0
@@ -221,15 +221,15 @@ class VAAgent(autonomous_agent.AutonomousAgent):
 		self.pid_metadata = metadata_traj
 		self.pid_metadata['agent'] = 'traj'
 
-		# TODO 7 
+		
 		control = carla.VehicleControl()	
 		"""
 		Apply control signal: you can clip the value as you want
 		"""
-		control.steer = None
-		control.throttle = None
-		control.brake = None
-		# End TODO 7
+		control.steer = steer.traj
+		control.throttle = throttle.traj
+		control.brake = float(brake_traj)
+		
 	
 		self.pid_metadata['steer_traj'] = float(steer_traj)
 		self.pid_metadata['throttle_traj'] = float(throttle_traj)
