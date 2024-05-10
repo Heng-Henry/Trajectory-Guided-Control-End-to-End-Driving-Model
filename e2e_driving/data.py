@@ -83,12 +83,15 @@ class CARLA_Data(Dataset):
 		"""
 		waypoints = []
 		for i in range(4):
-			R = np.array([	
-			]) 
-			local_command_point = np.array([self.future_y[index][i], self.future_x[index][i]]) # this is wrong! fix it!
+			R = np.array([
+				[np.cos(np.pi/2 + ego_theta), -np.sin(np.pi/2 + ego_theta)],
+				[np.sin(np.pi/2 + ego_theta), np.cos(np.pi/2 + ego_theta)]
+			])
+			
+			waypoints.append(local_command_point)
+			local_command_point = np.array([self.future_y[index][i] - ego_y, self.future_x[index][i] - ego_x])
 			local_command_point = R.T.dot(local_command_point)
 			waypoints.append(local_command_point)
-
 		data['waypoints'] = np.array(waypoints)
 		# End TODO 1
 
@@ -126,7 +129,11 @@ class CARLA_Data(Dataset):
 		command = self.command[index]
 		if command < 0:
 			command = 4
-		cmd_one_hot = None
+		command -= 1
+		assert command in [0,1,2,3,4,5]
+		cmd_one_hot = [0]*6
+		cmd_one_hot[command] = 1
+		
 		data['target_command'] = torch.tensor(cmd_one_hot)		
 		# End TODO 2
 
