@@ -75,7 +75,7 @@ class VA(nn.Module):
 	def forward(self, img, state, target_point):
 		outputs = {}
 
-		# TODO 3
+	
 		"""
 		Please check the network first!
 
@@ -86,10 +86,10 @@ class VA(nn.Module):
 		Predict the ego's speed 
 		:outputs['pred_speed']: input feature_emb into self.speed_branch to predict the speed.
 		"""
-		feature_emb, cnn_feature = None
-		measurement_feature = None
-		outputs['pred_speed'] = None
-		# End TODO 3
+		feature_emb, cnn_feature = self.perception(img)
+		measurement_feature = self.measurements(state)
+		outputs['pred_speed'] = self.speed_branch(feature_emb)
+		
 
 		j_traj = self.join_traj(torch.cat([feature_emb, measurement_feature], 1))
 
@@ -99,9 +99,9 @@ class VA(nn.Module):
 		# initial input variable to GRU
 		x = torch.zeros(size=(z.shape[0], 2), dtype=z.dtype).type_as(z)
 
-		# TODO 4
+		
 		"""
-		Please check the network first! 
+		
 
 		Autoregressive generation of output waypoints
 		1. x_in: concat x and target point along second dimension -> shape=[B,4]
@@ -110,15 +110,15 @@ class VA(nn.Module):
 		4. x: update waypoint x by adding x with offset dx
 		"""
 		for _ in range(self.config.pred_len):
-			x_in = None
-			z = None
-			dx = None
-			x = None
+			x_in = torch.cat([x, target_point], dim=1)
+			z = self.decoder_traj(x_in, z)
+			dx = self.output_traj(z)
+			x = dx + x
 			output_wp.append(x)
 
 		pred_wp = torch.stack(output_wp, dim=1)
 		outputs['pred_wp'] = pred_wp
-		# End TODO 4
+		
 
 		return outputs
 
