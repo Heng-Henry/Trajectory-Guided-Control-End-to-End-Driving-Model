@@ -75,7 +75,7 @@ class CARLA_Data(Dataset):
 		ego_y = self.y[index][0]
 		ego_theta = self.theta[index][0]
 
-		# TODO 1
+		
 		"""
 		Setup ground-truth future waypoints.
 		:R: matrix that converts the future (x,y) into ego's coordinate
@@ -93,7 +93,7 @@ class CARLA_Data(Dataset):
 			local_command_point = R.T.dot(local_command_point)
 			waypoints.append(local_command_point)
 		data['waypoints'] = np.array(waypoints)
-		# End TODO 1
+		
 
 		R = np.array([
 			[np.cos(np.pi/2+ego_theta), -np.sin(np.pi/2+ego_theta)],
@@ -113,7 +113,7 @@ class CARLA_Data(Dataset):
 		data['speed'] = self.speed[index]
 
 
-		# TODO 2
+		
 		"""
 		Create an one hot vector of high-level command.
 		Ex: command = 3 (straight) -> cmd_one_got = [0,0,1,0,0,0]
@@ -135,7 +135,7 @@ class CARLA_Data(Dataset):
 		cmd_one_hot[command] = 1
 		
 		data['target_command'] = torch.tensor(cmd_one_hot)		
-		# End TODO 2
+		
 
 		self._batch_read_number += 1
 		return data
